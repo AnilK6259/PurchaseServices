@@ -116,8 +116,8 @@ public class PurchaseServices {
 	
 	public int getOrderId(String userName)
 	{
-		int orderId=productServices.getOrderList().getOrderDataList().get(userName).keySet().size()+1;
-		
+		//int orderId=productServices.getOrderList().getOrderDataList().get(userName).keySet().size()+1;
+		int orderId=productServices.getOrderList().getOrderCount().size()+1;
 		return orderId;
 	}
 

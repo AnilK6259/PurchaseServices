@@ -3,6 +3,11 @@ package PrchaseServices;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 public class WriteUser {
 	
@@ -17,7 +22,7 @@ public class WriteUser {
 		String filePath=tooStringFileName(fileName,dirPath);
 		
 		File file=new File(filePath);
-		try
+		/*try
 		{
 		FileWriter fw=new FileWriter(file);
 		
@@ -35,13 +40,43 @@ public class WriteUser {
 		catch(Exception e)
 		{
 			System.out.println(e);
+		}*/
+		
+		JsonFactory jf=new JsonFactory();
+		
+		try {
+			JsonGenerator jg=jf.createGenerator(file, JsonEncoding.UTF8);
+			
+			jg.writeStartObject();
+			
+			jg.writeStringField("userName", user.getUserName());
+			
+			jg.writeStringField("title", user.gettitle());
+			
+			jg.writeStringField("firstName", user.getfirstName());
+			
+			jg.writeStringField("lastName", user.getlastName());
+			
+			jg.writeStringField("mailId", user.getmailId());
+			
+			jg.writeStringField("password", user.getpassword());
+			
+			jg.writeEndObject();
+			
+			jg.close();
+			
+			System.out.println("Json File Created");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
 	public String tooStringFileName(String fileName)
 	{
 		StringBuffer sb=new StringBuffer(fileName);
-		sb.append(".txt");
+		sb.append(".json");
 		
 		return sb.toString();
 	}

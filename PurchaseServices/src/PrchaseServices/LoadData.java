@@ -4,6 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class LoadData {
 	
 	private User user;
@@ -60,7 +66,14 @@ public class LoadData {
 		
 		for(File file:files)
 			{
-			
+	
+		String fileName=	file.getName();
+		
+		int indexOfExtention=fileName.indexOf(".");
+		
+		String extention=fileName.substring(indexOfExtention);
+		if(extention.equalsIgnoreCase(".txt"))
+		{
 			switch(pathType)
 			{
 			case "users": readDataFromUserFile(file.getPath());
@@ -76,6 +89,27 @@ public class LoadData {
 			break;
 			
 			}
+			
+		}
+		
+		else if(extention.equalsIgnoreCase(".json"))
+		{
+			switch(pathType)
+			{
+			case "users": readDataFromUserFileJson(file.getPath());
+			break;
+			
+			case "products":readDataFromProductsFileJson(file.getPath());
+			break;
+			
+			case "addtocart":readDataFromAddToCartFileJson(file.getPath());
+			break;
+			
+			case "orders":readDataFromOrdersFileJson(file.getPath());
+			break;
+			
+			}
+		}
 			}
 		 }
 		 
@@ -156,6 +190,101 @@ public class LoadData {
 		}
 	}
 	
+	public void readDataFromUserFileJson(String x) 
+	{
+		JsonFactory jf=new JsonFactory();
+		try
+		{
+		//FileReader fr=new FileReader(x);
+		
+		//try (BufferedReader br = new BufferedReader(fr)) {
+			//boolean loopBreak=true;
+			
+			JsonParser jp=jf.createParser(new File(x));
+			
+			User NewUser=new User();
+			
+			//jp.getValueAsString("userName");
+			
+			jp.nextToken();
+			jp.nextToken();
+			
+			if(jp.currentName().equalsIgnoreCase("userName"))
+					{
+				jp.nextToken();
+				NewUser.setUserName(jp.getText());
+					}
+			jp.nextToken();
+			
+			if(jp.currentName().equalsIgnoreCase("title"))
+			{
+				jp.nextToken();
+				NewUser.settitle(jp.getText());
+			}
+			
+			jp.nextToken();
+			
+			if(jp.currentName().equalsIgnoreCase("firstName"))
+			{
+				jp.nextToken();
+				NewUser.setfirstName(jp.getText());
+			}
+			
+           jp.nextToken();
+			
+			if(jp.currentName().equalsIgnoreCase("lastName"))
+			{
+				jp.nextToken();
+				NewUser.setlastName(jp.getText());
+			}
+			
+            jp.nextToken();
+			
+			if(jp.currentName().equalsIgnoreCase("mailId"))
+			{
+				jp.nextToken();
+				NewUser.setmailId(jp.getText());
+			}
+			
+			jp.nextToken();
+			
+			if(jp.currentName().equalsIgnoreCase("password"))
+			{
+				jp.nextToken();
+				NewUser.setpassword(jp.getText());
+			}
+			
+			
+			jp.close();
+				//User NewUser=user;
+				
+				if(NewUser.getUserName()!=null&&NewUser.getfirstName()!=null&&NewUser.getlastName()!=null&&NewUser.getmailId()!=null&&NewUser.getpassword()!=null&&NewUser.gettitle()!=null)
+				//if(NewUser!=null)
+				{
+					if(usd.getMap().get(NewUser.getUserName())==null)
+					{
+					usd.setUserData(NewUser.getUserName(), NewUser);
+					
+					System.out.println(usd.getMap().get(NewUser.getUserName()));
+					System.out.println("user added to map");
+					
+					//System.out.println(user);
+					}
+					
+					//loopBreak=false;
+					//NewUser.resetUser();   
+				}
+				
+			}
+		
+		//fr.close();
+		
+		
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+	}
 	public void readDataFromProductsFile(String x) 
 	{
 		try
@@ -235,6 +364,98 @@ public class LoadData {
 		}
 		
 		fr.close();
+		}
+		
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+	
+	public void readDataFromProductsFileJson(String x) 
+	{
+		try
+		{
+		//FileReader fr=new FileReader(x);
+		
+		
+			//boolean loopBreak=true;
+			
+			Products NewProducts=new Products() ;
+			
+			/*while(loopBreak)
+			{
+				String lineValue=br.readLine();
+				
+				if(lineValue!=null)
+				{
+				String lineArray[]=lineValue.split(": ");
+				
+				switch(lineArray[0])
+				{
+				
+				case "productKey":NewProducts.setProductKey(lineArray[1]);
+				break
+				;
+				
+				case "productName":NewProducts.setProductName(lineArray[1]);
+				
+				break
+				;
+				
+				case "description": NewProducts.setdescription(lineArray[1]);
+				
+				break
+				;
+				
+				case "productPrice": NewProducts.setProductPrice(Double.parseDouble(lineArray[1]));
+				break
+				;
+				case "productRating": NewProducts.setproductRating(lineArray[1]);;break
+				;
+				
+				case "productReviews":NewProducts.setproductReviews(lineArray[1]);
+				break
+				;
+				
+				default:loopBreak=false;
+					
+					break;
+				}*/
+			
+			ObjectMapper ob=new ObjectMapper();
+			
+			NewProducts=ob.readValue(new File(x),Products.class );
+			
+				
+				if(NewProducts.getProductKey()!=null&&NewProducts.getdescription()!=null&&NewProducts.getProductName()!=null&&NewProducts.getProductPrice()!=0&&NewProducts.getproductRating()!=null&&NewProducts.getproductReviews()!=null)
+				{
+					if(productDataList.getProductDataList().containsKey(NewProducts.getProductKey()))
+					{
+						if(!productDataList.getProductDataList().get(NewProducts.getProductKey()).containsKey(NewProducts.getProductName()))
+						{
+							productDataList.setProductsDataList(NewProducts.getProductKey(), NewProducts.getProductName(), NewProducts);
+						System.out.println("Products added");
+						System.out.println(productDataList.getProductDataList().get(NewProducts.getProductKey()).get(NewProducts.getProductName()));
+						}
+					
+					}
+					
+					else
+					{
+						productDataList.setProductsDataList(NewProducts.getProductKey(), NewProducts.getProductName(), NewProducts);
+						System.out.println("Products added");
+						System.out.println(productDataList.getProductDataList().get(NewProducts.getProductKey()).get(NewProducts.getProductName()));
+					}
+					
+					//loopBreak=false;
+					//products.resetProducts();
+				}
+				
+			
+			
+		
+		//fr.close();
 		}
 		
 		catch(Exception e)
@@ -329,6 +550,55 @@ public class LoadData {
 		}
 	}
 	
+	public void readDataFromAddToCartFileJson(String x) 
+	{
+		try
+		{
+		//FileReader fr=new FileReader(x);
+			AddToCartServicesProperties newacsp=new AddToCartServicesProperties();
+			
+		ObjectMapper ob=new ObjectMapper();
+		
+		newacsp=ob.readValue(new File(x), AddToCartServicesProperties.class);
+	
+				
+				if(newacsp.getorderId()!=0&&newacsp.getProductName()!=null&&newacsp.getuserName()!=null&&newacsp.getProductPrice()!=0.0)
+				{
+					if(addToCartDataList.getAddToCartDataList().containsKey(newacsp.getuserName()))
+					{
+						if(!addToCartDataList.getAddToCartDataList().get(newacsp.getuserName()).containsKey(newacsp.getorderId()))
+						{
+							addToCartDataList.setAddToCartDataList(newacsp.getuserName(), newacsp.getorderId(), newacsp);
+						System.out.println("AddToCardDetails added");
+						}
+					
+					}
+					
+					else
+					{
+						addToCartDataList.setAddToCartDataList(newacsp.getuserName(), newacsp.getorderId(), newacsp);
+						System.out.println("AddToCardDetails added");
+						//System.out.println(productDataList.getProductDataList().get(products.getProductKey()).get(products.getProductName()));
+						System.out.println(addToCartDataList.getAddToCartDataList().get(newacsp.getuserName()));
+						
+					}
+					
+					//loopBreak=false;
+					//addToCartDataList.resetCart();
+				}
+				
+			
+		
+		
+		//fr.close();
+		}
+		
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+	
 	public void readDataFromOrdersFile(String x) 
 	{
 		try
@@ -407,9 +677,11 @@ public class LoadData {
 							ordersList.setOrderlist(LoadOrders.username, LoadOrders.orderID, LoadOrders);
 						System.out.println("Orders added");
 						
+						ordersList.setOrderCount(tempOrderId);
+						
 						//System.out.println(ordersList.getOrderListInnerMap().keySet().size());
 						
-						if(LoadOrders!=null)
+						/*if(LoadOrders!=null)
 						{
 							if(ordersList.getOrderDataList()!=null)
 							{
@@ -421,7 +693,7 @@ public class LoadData {
 									}
 								}
 							}
-						}
+						}*/
 						}
 					
 					}
@@ -429,11 +701,14 @@ public class LoadData {
 					else
 					{
 						ordersList.setOrderlist(LoadOrders.username,LoadOrders.orderID, LoadOrders);
+						
 						System.out.println("Orders added");
+						
+						ordersList.setOrderCount(tempOrderId);
 						//System.out.println(ordersList.getOrderListInnerMap().keySet().size());
 						
 						//System.out.println(productDataList.getProductDataList().get(products.getProductKey()).get(products.getProductName()));
-					if(LoadOrders!=null)
+					/*if(LoadOrders!=null)
 					{
 						if(ordersList.getOrderDataList()!=null)
 						{
@@ -445,7 +720,7 @@ public class LoadData {
 								}
 							}
 						}
-					}
+					}*/
 					
 					}
 					
@@ -465,5 +740,66 @@ public class LoadData {
 		}
 	}
 
+	public void readDataFromOrdersFileJson(String x) 
+	{
+		try
+		{
+		
+			
+			OrdersProperties LoadOrders=new OrdersProperties();
+			
+			ObjectMapper ob=new ObjectMapper();
+			
+			LoadOrders	=ob.readValue(new File(x), OrdersProperties.class);
+				
+				if(LoadOrders.bankAccountNumber!=null&&LoadOrders.orderID!=0&&LoadOrders.orderedPeroductPrice!=0&&LoadOrders.orderedProductName!=null&&LoadOrders.orderTransactionNumber!=null&&LoadOrders.username!=null)
+				{
+					//ordersList.setOrderList(tempOrderId, temporderedProductName, temporderedPeroductPrice, tempbankAccountNumber, temporderTransactionNumber, tempUserName);
+					
+					LoadOrders.setOrdersProperties(LoadOrders.orderID, LoadOrders.orderedProductName, LoadOrders.orderedPeroductPrice, LoadOrders.bankAccountNumber, LoadOrders.orderTransactionNumber, LoadOrders.username);
+					
+					if(ordersList.getOrderDataList().containsKey(LoadOrders.username))
+					{
+						if(!ordersList.getOrderDataList().get(LoadOrders.username).containsKey(LoadOrders.orderID))
+						{
+							ordersList.setOrderlist(LoadOrders.username, LoadOrders.orderID, LoadOrders);
+						System.out.println("Orders added");
+						
+						ordersList.setOrderCount(LoadOrders.orderID);
+						
+						//System.out.println(ordersList.getOrderListInnerMap().keySet().size());
+						
+						}
+					
+					}
+					
+					else
+					{
+						ordersList.setOrderlist(LoadOrders.username,LoadOrders.orderID, LoadOrders);
+						
+						System.out.println("Orders added");
+						
+						ordersList.setOrderCount(LoadOrders.orderID);
+						//System.out.println(ordersList.getOrderListInnerMap().keySet().size());
+						
+						//System.out.println(productDataList.getProductDataList().get(products.getProductKey()).get(products.getProductName()));
+				
+					}
+					
+					//loopBreak=false;
+					//ordersList.resetOrders();
+				}
+				
+			
+		
+		
+		//fr.close();
+		}
+		
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+	}
 
 }

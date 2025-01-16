@@ -89,7 +89,7 @@ public class UserModule {
         
         rd.readUsersData("products");
         
-        rd.readUsersData("addtocart");
+       rd.readUsersData("addtocart");
         
       home.dashBoard(); 
         

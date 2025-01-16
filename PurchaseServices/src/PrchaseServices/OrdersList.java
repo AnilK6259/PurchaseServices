@@ -1,14 +1,20 @@
 package PrchaseServices;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 //import java.util.LinkedHashMap;
 //import java.util.LinkedHashMap;
 //import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class OrdersList {
 	
 	private Map<String,Map<Integer,OrdersProperties>> OrdersListData=new HashMap<>();
+	
+	private Set<Integer> orderCount=new HashSet<>();
+	
 	//private Map<Integer,OrdersProperties> OrderListInnerMap=new HashMap<>();
 	
 	/*public Map<Integer,OrdersProperties> getOrderListInnerMap()
@@ -45,6 +51,15 @@ public class OrdersList {
 	public Map<String,Map<Integer,OrdersProperties>> getOrderDataList()
 	{
 		return this.OrdersListData;
+	}
+	
+	public void setOrderCount(int count)
+	{
+		orderCount.add(count);
+	}
+
+	public Set<Integer> getOrderCount() {
+		return orderCount;
 	}
 	
 

@@ -3,6 +3,11 @@ package PrchaseServices;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 public class WriteOrders {
 	
@@ -18,7 +23,7 @@ public class WriteOrders {
 		
 		File file=new File(filePath);
 		
-		try
+		/*try
 		{
 			FileWriter fw=new FileWriter(file);
 			
@@ -39,6 +44,36 @@ public class WriteOrders {
 		catch(Exception e)
 		{
 			System.out.println(e);
+		}*/
+		
+		JsonFactory jf=new JsonFactory();
+		
+		try {
+			JsonGenerator jg=jf.createGenerator(file, JsonEncoding.UTF8);
+			
+			jg.writeStartObject();
+			
+			jg.writeNumberField("orderId", ordersList.orderID);
+			
+			jg.writeStringField("orderedProductName", ordersList.orderedProductName);
+			
+			jg.writeNumberField("orderedPeroductPrice", ordersList.orderedPeroductPrice);
+			
+			jg.writeStringField("bankAccountNumber", ordersList.bankAccountNumber);
+			
+			jg.writeStringField("orderTransactionNumber", ordersList.orderTransactionNumber);
+			
+			jg.writeStringField("username", ordersList.username);
+			
+			jg.writeEndObject();
+			
+			 jg.close();
+	            
+	            System.out.println("JSON file created successfully!");
+	            
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -46,7 +81,7 @@ public class WriteOrders {
 	public String tooStringFileName(String fileName)
 	{
 		StringBuffer sb=new StringBuffer(fileName);
-		sb.append(".txt");
+		sb.append(".json");
 		
 		return sb.toString();
 	}
